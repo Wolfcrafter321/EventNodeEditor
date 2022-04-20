@@ -1,0 +1,8 @@
+{
+  "name": "com.wolfcrafter321.event_node_editor",
+  "version": "0.1.0",
+  "displayName": "EventNodeEditor",
+  "description": "Event Node Editor for RPG, Transitions, Events, and more.\nAnd Event Node can create with Custom Node Editor by Wolfcrafter321.",
+  "unity": "2021.2",
+  "type": "tests"
+}
