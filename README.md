@@ -1,2 +1,2 @@
 # EventNodeEditor
-My custom Unity Scripts.
+Unity用の、カスタムイベントノードエディターです。
