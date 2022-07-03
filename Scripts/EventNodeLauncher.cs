@@ -73,9 +73,8 @@ public class EventNodeLauncher : MonoBehaviour
 
 
 #if UNITY_EDITOR
-
 [CustomEditor(typeof(EventNodeLauncher))]
-public class EventNodeLauncherEditor : Editor
+public class EventNodeLauncherInspectorEditor : Editor
 {
     public override void OnInspectorGUI()
     {
@@ -83,37 +82,40 @@ public class EventNodeLauncherEditor : Editor
         base.OnInspectorGUI();
 
         GUILayout.Space(30);
-        if (GUILayout.Button("Open Window"))
+        if (GUILayout.Button("Open Window", GUILayout.Height(55)))
         {
-            if (targ.events == null) targ.events = CreateNode();
-            var w = EditorWindow.GetWindow(typeof(EventNodeEditorWindow));
+            if (targ.events == null) targ.events = CreateEventNodeObject();
+            var w = (EventNodeEditorWindow)EditorWindow.GetWindow(typeof(EventNodeEditorWindow));
             w.titleContent = new GUIContent("EventNode Editor");
-        }
-        if (GUILayout.Button("Create"))
-        {
-            targ.events = CreateNode();
+            w.eventObj = targ.events;
+            w.LoadNodes();
         }
         if (GUILayout.Button("Delete"))
         {
-            DestroyImmediate(targ.events);
-            targ.events = null;
+            if (EditorUtility.DisplayDialog("Delete EventNode.", "Delete the event node object. The created data will be reset. Are you sure?", "Sure", "No"))
+            {
+                DestroyImmediate(targ.events);
+                targ.events = null;
+            }
         }
         if (GUILayout.Button("Create DEBUG MODE"))
         {
-            targ.events = CreateNode();
+            targ.events = CreateEventNodeObject();
             targ.events.nodes = new List<EventNode>();
             targ.events.nodes.Add(CreateEventNode("Node_Wait"));
             targ.events.nodes.Add(CreateEventNode());
             targ.events.nodes.Add(CreateEventNode("Node_Log"));
         }
+
     }
 
-    EventNodeObject CreateNode()
+    EventNodeObject CreateEventNodeObject()
     {
-        EventNodeObject ev = (EventNodeObject)ScriptableObject.CreateInstance(typeof(EventNodeObject));
+        EventNodeObject ev = (EventNodeObject)CreateInstance(typeof(EventNodeObject));
         ev.name = "EventNodeObject";
         return ev;
     }
+
     EventNode CreateEventNode(string type = "None")
     {
         EventNode ev;
@@ -121,46 +123,23 @@ public class EventNodeLauncherEditor : Editor
         {
             case "None":
             default:
-                ev = (EventNode)ScriptableObject.CreateInstance(typeof(EventNode));
+                ev = (EventNode)CreateInstance(typeof(EventNode));
                 ev.name = "EventNode";
+                ev.guid = GUID.Generate().ToString();
                 return ev;
             case "Node_Log":
-                ev = (Node_Log)ScriptableObject.CreateInstance(typeof(Node_Log));
+                ev = (Node_Log)CreateInstance(typeof(Node_Log));
                 ev.name = "Node_Log";
+                ev.guid = GUID.Generate().ToString();
                 return ev;
             case "Node_Wait":
-                ev = (Node_Wait)ScriptableObject.CreateInstance(typeof(Node_Wait));
+                ev = (Node_Wait)CreateInstance(typeof(Node_Wait));
                 ev.name = "Node_Wait";
+                ev.guid = GUID.Generate().ToString();
                 return ev;
         }
 
-        return null;
     }
 }
 
-public class EventNodeEditorWindow : EditorWindow
-{
-    NodeEditorGraphView graph;
-
-    private void OnEnable()
-    {
-        graph = new NodeEditorGraphView()
-        {
-            style = { flexGrow = 1, backgroundColor = new StyleColor(new Color(0.1f, 0.1f, 0.1f)) },
-            name = "EventNode Graph",
-        };
-        Toolbar toolbar = new Toolbar();
-        {
-            toolbar.Add(new ToolbarSpacer() { name = "Space", style = { height = 60 } });
-            ToolbarButton tb1 = new ToolbarButton() { text = "Save Events" };
-            tb1.clickable.clicked += () => { Debug.Log("Hoge"); };
-            //tb1.clickable.clicked += () => gv.SaveGraph();
-            toolbar.Add(tb1);
-            toolbar.Add(new ToolbarSpacer() { name = "Spaece", style = { width = 50 } });
-        }
-
-        graph.Add(toolbar);
-        rootVisualElement.Add(graph);
-    }
-}
 #endif
