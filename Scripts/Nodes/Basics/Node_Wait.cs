@@ -1,19 +1,17 @@
 using System.Collections;
 using UnityEngine;
 
-public class Node_Log : EventNode
+public class Node_Wait : EventNode
 {
 
-    public string log;
+    public float time;
 
 
     public override IEnumerator Execute()
     {
         base.Execute();
 
-        Debug.Log(log);
-
-        yield return null;
+        yield return new WaitForSeconds(time);
     }
 
 

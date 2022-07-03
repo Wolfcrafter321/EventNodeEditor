@@ -10,7 +10,7 @@ using UnityEditor.UIElements;
 #endif
 
 [System.Serializable]
-public class EventNode
+public class EventNode : ScriptableObject
 {
     public string title;
     public string guid;
@@ -20,9 +20,9 @@ public class EventNode
 
     public virtual IEnumerator Execute()
     {
-
+        
         Debug.LogFormat("Exe! {0} {1}", title, guid);
-        yield return new WaitForSeconds(1f);
+        yield return null;
     }
 }
 

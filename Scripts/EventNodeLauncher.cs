@@ -47,18 +47,18 @@ public class EventNodeLauncher : MonoBehaviour
 
             yield return StartCoroutine(nextNode.Execute());
 
-            if (nextNode != null)
-                if (nextNode.outputGUID != null && nextNode.outputGUID.Length > 0)
-                {
-                    nextNode = events.GetNextNode(nextNode);
-                }
-                else
-                {
-                    Debug.Log("No more Event connections. Finishing Event."); 
-                    FinishEvent();
-                    break;
-                }
-            else { Debug.Log("Next Node is null. Finishing Event."); FinishEvent();  break; }
+            //if (nextNode != null)
+            if (nextNode.outputGUID != null && nextNode.outputGUID.Length > 0)
+            {
+                nextNode = events.GetNextNode(nextNode);
+            }
+            else
+            {
+                Debug.Log("No more Event connections. Finishing Event."); 
+                FinishEvent();
+                break;
+            }
+            //else { Debug.Log("Next Node is null. Finishing Event."); FinishEvent();  break; }
         }
 
         yield return null;
@@ -102,17 +102,39 @@ public class EventNodeLauncherEditor : Editor
         {
             targ.events = CreateNode();
             targ.events.nodes = new List<EventNode>();
-            targ.events.nodes.Add(new EventNode());
-            targ.events.nodes.Add(new EventNode());
-            targ.events.nodes.Add(new EventNode());
+            targ.events.nodes.Add(CreateEventNode("Node_Wait"));
+            targ.events.nodes.Add(CreateEventNode());
+            targ.events.nodes.Add(CreateEventNode("Node_Log"));
         }
     }
 
     EventNodeObject CreateNode()
     {
         EventNodeObject ev = (EventNodeObject)ScriptableObject.CreateInstance(typeof(EventNodeObject));
-        ev.name = "EventNode";
+        ev.name = "EventNodeObject";
         return ev;
+    }
+    EventNode CreateEventNode(string type = "None")
+    {
+        EventNode ev;
+        switch (type)
+        {
+            case "None":
+            default:
+                ev = (EventNode)ScriptableObject.CreateInstance(typeof(EventNode));
+                ev.name = "EventNode";
+                return ev;
+            case "Node_Log":
+                ev = (Node_Log)ScriptableObject.CreateInstance(typeof(Node_Log));
+                ev.name = "Node_Log";
+                return ev;
+            case "Node_Wait":
+                ev = (Node_Wait)ScriptableObject.CreateInstance(typeof(Node_Wait));
+                ev.name = "Node_Wait";
+                return ev;
+        }
+
+        return null;
     }
 }
 
